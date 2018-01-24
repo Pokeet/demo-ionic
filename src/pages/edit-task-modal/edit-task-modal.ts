@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 
 /**
  * Generated class for the EditTaskModalPage page.
@@ -15,11 +15,22 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class EditTaskModalPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  taskText : any
+
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams,
+    public viewCtrl: ViewController
+  ) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad EditTaskModalPage');
+  cancel () {
+    this.viewCtrl.dismiss()
+  }
+
+  validate () {
+    let data = 
+    this.viewCtrl.dismiss(this.taskText)
   }
 
 }

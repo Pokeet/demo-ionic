@@ -20,6 +20,13 @@ export class HomePage {
 
   addTask () {
     let modal = this.modalCtrl.create(EditTaskModalPage)
+
+    modal.onDidDismiss(data => {
+      if (data != null && data != '') {
+        this.tasks.push(data)
+      }
+    })
+
     modal.present()
   }
 

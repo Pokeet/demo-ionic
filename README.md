@@ -253,3 +253,81 @@ addTask () {
     modal.present()
 }
 ```
+
+Maintenant notre nouvelle page s'affiche au-dessus, il n'y a plus qu'a modifier son contenu.
+
+```HTML
+edit-task-modal.html
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Editer la tâche</ion-title>
+    <ion-buttons start>
+      <button ion-button (click)="cancel()">
+        <span ion-text color="primary" showWhen="ios">Annuler</span>
+        <ion-icon name="md-close" showWhen="android,windows"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-item>
+    <ion-input type="text" value="" placeholder="Tenir la porte" [(ngModel)]="taskText"></ion-input>
+  </ion-item>
+
+  <button ion-item color="danger" (click)="cancel()">Annuler</button>
+  <button ion-item color="primary" (click)="validate()" [disabled]="taskText == null || taskText == ''">Valider</button>
+
+</ion-content>
+```
+
+Quelques nouveautées ici. Tou d'abord l'usage de la directive ``showWhen`` qui permet de ne montrer un element que sur certain os. Mais surtout l'usage de la directive ``[(ngModel)]`` qui permet de lier le contenu du champ de text a la variable taskText. Ainsi, si la valeur de taskText change, la valeur du champ changera, et inversement. Enfin, il y a la directive ``[disabled]`` du bouton Valider qui permet de desactiver un bouton seulement si la condition est remplie.
+
+Passons maintenant au script du modal :
+```TypeScript
+edit-task-modal.ts
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'; // On oublie pas d'importer ViewConroller
+...
+export class EditTaskModalPage {
+
+  taskText : any
+
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams,
+    public viewCtrl: ViewController // on injecte le view controller
+  ) {
+  }
+
+  cancel () {
+    this.viewCtrl.dismiss() // On ferme le modal sans renvoyer de parametre
+  }
+
+  validate () {
+    this.viewCtrl.dismiss(this.taskText) // On ferme le modal en renvoyant le texte dans le champ.
+  }
+
+}
+```
+
+Enfin on modifie la fonction addTask() de home.ts
+
+```TypeScript
+home.ts
+addTask () {
+    let modal = this.modalCtrl.create(EditTaskModalPage)
+
+    // Lorsqu'on ferme le modal on vérifie si des donnée on été renvoyé. Si oui, on ajoute la tâche.
+    modal.onDidDismiss(data => { 
+        if (data != null && data != '') {
+            this.tasks.push(data)
+        }
+    })
+
+    modal.present()
+}
+```
