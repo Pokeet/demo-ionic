@@ -184,9 +184,9 @@ home.html
 ```TypeScript
 home.ts
 ...
-    addTask () {
-        console.log('hello')
-    }
+addTask () {
+    console.log('hello')
+}
 ...
 ```
 
@@ -198,3 +198,58 @@ Un petit coup de ``ionic help`` nous apprend qu'il existe une commande generate 
 ionic generate page edit-task-modal
 ```
 
+Hop, ionic nous génère tous les fichier qu'il faut pour créer une nouvelle page. Il faut ensuite déclarer cette nouvelle page dans src/app/app.module.ts.
+
+```TypeScript
+src/app/app.module.ts
+...
+import { MyApp } from './app.component'
+import { HomePage } from '../pages/home/home'
+import { EditTaskModalPage } from '../pages/edit-task-modal/edit-task-modal'
+
+@NgModule({
+  declarations: [
+    MyApp,
+    HomePage,
+    EditTaskModalPage // on ajoute cette ligne
+  ],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(MyApp)
+  ],
+  bootstrap: [IonicApp],
+  entryComponents: [
+    MyApp,
+    HomePage,
+    EditTaskModalPage // et cette ligne
+  ],
+  providers: [
+    StatusBar,
+    SplashScreen,
+    {provide: ErrorHandler, useClass: IonicErrorHandler}
+  ]
+})
+export class AppModule {}
+```
+
+On a plus qu'a l'afficher dans le modal [comme indiqué sur la doc](https://ionicframework.com/docs/components/#modals).
+
+```TypeScript
+home.ts
+import { Component } from '@angular/core';
+import { NavController, ModalController } from 'ionic-angular';
+import { EditTaskModalPage } from '../edit-task-modal/edit-task-modal'
+...
+
+constructor (
+    public navCtrl: NavController,
+    public modalCtrl: ModalController // on injecte le modal controller
+) {
+
+}
+
+addTask () {
+    let modal = this.modalCtrl.create(EditTaskModalPage)
+    modal.present()
+}
+```

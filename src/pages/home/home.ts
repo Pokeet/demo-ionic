@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ModalController } from 'ionic-angular';
+import { EditTaskModalPage } from '../edit-task-modal/edit-task-modal'
 
 @Component({
   selector: 'page-home',
@@ -11,13 +12,15 @@ export class HomePage {
   tasks = []
 
   constructor (
-    public navCtrl: NavController
+    public navCtrl: NavController,
+    public modalCtrl: ModalController
   ) {
     
   }
 
   addTask () {
-    console.log('hello')
+    let modal = this.modalCtrl.create(EditTaskModalPage)
+    modal.present()
   }
 
 }
