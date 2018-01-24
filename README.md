@@ -285,7 +285,7 @@ edit-task-modal.html
 </ion-content>
 ```
 
-Quelques nouveautées ici. Tou d'abord l'usage de la directive ``showWhen`` qui permet de ne montrer un element que sur certain os. Mais surtout l'usage de la directive ``[(ngModel)]`` qui permet de lier le contenu du champ de text a la variable taskText. Ainsi, si la valeur de taskText change, la valeur du champ changera, et inversement. Enfin, il y a la directive ``[disabled]`` du bouton Valider qui permet de desactiver un bouton seulement si la condition est remplie.
+Quelques nouveautées ici. Tout d'abord l'usage de la directive ``showWhen`` qui permet de ne montrer un element que sur certain os. Mais surtout l'usage de la directive ``[(ngModel)]`` qui permet de lier le contenu du champ de text a la variable taskText. Ainsi, si la valeur de taskText change, la valeur du champ changera, et inversement. Enfin, il y a la directive ``[disabled]`` du bouton Valider qui permet de desactiver un bouton seulement si la condition est remplie.
 
 Passons maintenant au script du modal :
 ```TypeScript
@@ -331,3 +331,7 @@ addTask () {
     modal.present()
 }
 ```
+
+Voilà, on peut maintenant ajouter une tâche. 
+
+Maintenant, débrouillez-vous pour que lorsqu'on clique sur une tâche elle sois supprimé de la liste ou barré. Et faire en sorte qu'on puisse éditer une tâche. Petit indice, regardez du coté de navParam.
