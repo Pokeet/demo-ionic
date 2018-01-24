@@ -1,13 +1,15 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Demo Ionic
+      Super Todo
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <p>
-    Une application simple avec Ionic. La doc est <a href="http://ionicframework.com/docs/v2">ICI</a>.
-  </p>
+  <ion-list>
+    <button ion-item *ngFor="let task of tasks" (click)="toggleTask(task)">
+      {{ task }}
+    </button>
+  </ion-list>
 </ion-content>
