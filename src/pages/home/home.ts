@@ -10,10 +10,14 @@ export class HomePage {
 
   tasks = []
 
-  constructor(
+  constructor (
     public navCtrl: NavController
   ) {
     
+  }
+
+  addTask () {
+    console.log('hello')
   }
 
 }

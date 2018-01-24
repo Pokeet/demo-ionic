@@ -122,11 +122,14 @@ Voilà, nous avons maintenant compris ce que signifiait tous ces attribut et bal
 Ouvrez le fichier src/pages/home.html et supprimez le code entre les balises ``ion-content``. Maintenant ajoutez le code suivant entre ces mêmes balises :
 
 ```html
-  <ion-list>
+home.html
+...
+<ion-list>
     <button ion-item *ngFor="let task of tasks" (click)="toggleTask(task)">
-      {{ task }}
+        {{ task }}
     </button>
-  </ion-list>
+</ion-list>
+...
 ```
 
 Le code est très similaire a l'exemple de la doc... On créer autant de boutont qu'il y a d'élément dans le tableau tasks et on appelle la méthode ``toggleTask`` au click.
@@ -136,18 +139,62 @@ On sauvegarde et on regarde l'aperçu de la page... Rien. Et c'est normal, nous 
 C'est donc le moment d'ouvrir le fichier src/pages/home.ts. Nous allons déclarer le tableau des taches "tasks" dans la classe HomePage, au dessus du constructor :
 
 ```TypeScript
+home.ts
+...
 export class HomePage {
 
-  tasks = []
+    tasks = []
 
-  constructor(
-    public navCtrl: NavController
-  ) {
-    
-  }
+    constructor(
+        public navCtrl: NavController
+    ) {
+
+    }
 
 }
 ```
 
 Il nous faut maintenant de quoi ajouter une tache à notre liste. On va utiliser un [FAB](https://ionicframework.com/docs/components/#fabs). 
+
+```HTML
+home.html
+...
+<ion-fab bottom right>
+    <button ion-fab>
+        <ion-icon name="add"></ion-icon>
+    </button>
+</ion-fab>
+...
+```
+
+Bon c'est cool mais il sert à rien notre boutton. On va donc ajouter une directive ``(click)`` pour declancher une action au click. Puis on va ecrire la méthode dans le fichier home.ts sans quoi on aura droit a une belle erreur. 
+
+
+```HTML
+home.html
+...
+<ion-fab bottom right (click)="addTask()">
+    <button ion-fab>
+        <ion-icon name="add"></ion-icon>
+    </button>
+</ion-fab>
+...
+```
+
+```TypeScript
+home.ts
+...
+    addTask () {
+        console.log('hello')
+    }
+...
+```
+
+Maintenant lorsque vous appuyez sur le boutton vous devriez voir 'hello' apparaitre dans votre terminal. C'est un début... C'est l'heure d'ouvrir un [modal](https://ionicframework.com/docs/components/#modals) et de créer une nouvelle page !
+
+Un petit coup de ``ionic help`` nous apprend qu'il existe une commande generate qui permet de generer des pages, des directives, des composants ect ect... Essayons :
+
+```
+ionic generate page edit-task-modal
+```
 
