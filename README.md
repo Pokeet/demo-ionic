@@ -205,7 +205,7 @@ ionic generate page edit-task-modal
 Hop, ionic nous génère tous les fichier qu'il faut pour créer une nouvelle page ! 
 On remarquera cependant qu'il existe un fichier suplémentaire par rapport à notre home page ; le fichier 'edit-task-modal.module.ts'.
 
-Or c'est dans ce fichier qu'on va importer et déclarer les page et composant qu'on pourra utiliser dans notre page. Le fait que le dossier home n'en contienne pas est donc assez génant si on veut utiliser la page d'édition de tâche. On va donc créer ce fichier nous même. Ou plutôt, on va copier [l'exemple de la doc](https://ionicframework.com/docs/api/IonicModule/) dans un nouveau fichier nommé home.module.ts dans le dossier pages/home. Contrôlez bien quand même que la classe de votre home est bien HomePage, sinon adaptez le fichier en conséquence.
+Or c'est dans ce fichier qu'on va importer et déclarer les pages et composants qu'on pourra utiliser dans notre page. Le fait que le dossier home n'en contienne pas est donc assez génant si on veut utiliser la page d'édition de tâche. On va donc créer ce fichier nous même. Ou plutôt, on va copier [l'exemple de la doc](https://ionicframework.com/docs/api/IonicModule/) dans un nouveau fichier nommé home.module.ts dans le dossier pages/home. Contrôlez bien quand même que la classe de votre home est bien HomePage, sinon adaptez le fichier en conséquence.
 
 Bien, maintenant il faut changer le fichier src/app.module.ts car il n'utilise pas le fichier qu'on vien de créer mais importe directement la classe HomePage. Du coup on aura beau déclarer les composants et pages qu'on veut utiliser dans notre fichier, ça ne changera rien au resultat : une erreur à propos d'une élément non déclaré.
 
@@ -398,3 +398,4 @@ Voilà, on peut maintenant ajouter une tâche.
 
 Maintenant, débrouillez-vous pour que lorsqu'on clique sur une tâche elle sois supprimé de la liste. 
 
+>! spoiler
