@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { NavController, ModalController } from 'ionic-angular';
-import { EditTaskModalPage } from '../edit-task-modal/edit-task-modal'
 
 @Component({
   selector: 'page-home',
@@ -19,7 +18,7 @@ export class HomePage {
   }
 
   addTask () {
-    let modal = this.modalCtrl.create(EditTaskModalPage)
+    let modal = this.modalCtrl.create('EditTaskModalPage')
 
     modal.onDidDismiss(data => {
       if (data != null && data != '') {
@@ -28,6 +27,10 @@ export class HomePage {
     })
 
     modal.present()
+  }
+
+  toggleTask () {
+
   }
 
 }

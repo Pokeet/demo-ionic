@@ -94,6 +94,8 @@ Pour notre applications nous allons avoir besoin de 3 composants :
 - Un bouton pour ajouter une nouvelle tâche
 - Un modal pour rentrer les information d'une tâche
 
+#### La liste
+
 C'est parti pour la liste. La documention nous indique que pour créer une liste il faut utiliser la balise ``ion-list`` comme suit :
 
 ```html
@@ -122,7 +124,7 @@ Voilà, nous avons maintenant compris ce que signifiait tous ces attribut et bal
 Ouvrez le fichier src/pages/home.html et supprimez le code entre les balises ``ion-content``. Maintenant ajoutez le code suivant entre ces mêmes balises :
 
 ```html
-home.html
+//home.html
 ...
 <ion-list>
     <button ion-item *ngFor="let task of tasks" (click)="toggleTask(task)">
@@ -139,7 +141,7 @@ On sauvegarde et on regarde l'aperçu de la page... Rien. Et c'est normal, nous 
 C'est donc le moment d'ouvrir le fichier src/pages/home.ts. Nous allons déclarer le tableau des taches "tasks" dans la classe HomePage, au dessus du constructor :
 
 ```TypeScript
-home.ts
+//home.ts
 ...
 export class HomePage {
 
@@ -153,11 +155,11 @@ export class HomePage {
 
 }
 ```
-
+#### Le bouton
 Il nous faut maintenant de quoi ajouter une tache à notre liste. On va utiliser un [FAB](https://ionicframework.com/docs/components/#fabs). 
 
 ```HTML
-home.html
+//home.html
 ...
 <ion-fab bottom right>
     <button ion-fab>
@@ -167,11 +169,11 @@ home.html
 ...
 ```
 
-Bon c'est cool mais il sert à rien notre boutton. On va donc ajouter une directive ``(click)`` pour declancher une action au click. Puis on va ecrire la méthode dans le fichier home.ts sans quoi on aura droit a une belle erreur. 
+Bon c'est cool mais il sert à rien notre bouton. On va donc ajouter une directive ``(click)`` pour declancher une action au click. Puis on va ecrire la méthode dans le fichier home.ts sans quoi on aura droit a une belle erreur. 
 
 
 ```HTML
-home.html
+//home.html
 ...
 <ion-fab bottom right (click)="addTask()">
     <button ion-fab>
@@ -182,7 +184,7 @@ home.html
 ```
 
 ```TypeScript
-home.ts
+//home.ts
 ...
 addTask () {
     console.log('hello')
@@ -190,7 +192,7 @@ addTask () {
 ...
 ```
 
-Maintenant lorsque vous appuyez sur le boutton vous devriez voir 'hello' apparaitre dans votre terminal. C'est un début... C'est l'heure d'ouvrir un [modal](https://ionicframework.com/docs/components/#modals) et de créer une nouvelle page !
+Maintenant lorsque vous appuyez sur le bouton vous devriez voir 'hello' apparaitre dans votre terminal. C'est un début... C'est l'heure d'ouvrir un [modal](https://ionicframework.com/docs/components/#modals) et de créer une nouvelle page !
 
 Un petit coup de ``ionic help`` nous apprend qu'il existe une commande generate qui permet de generer des pages, des directives, des composants ect ect... Essayons :
 
@@ -198,30 +200,43 @@ Un petit coup de ``ionic help`` nous apprend qu'il existe une commande generate 
 ionic generate page edit-task-modal
 ```
 
-Hop, ionic nous génère tous les fichier qu'il faut pour créer une nouvelle page. Il faut ensuite déclarer cette nouvelle page dans src/app/app.module.ts.
+Hop, ionic nous génère tous les fichier qu'il faut pour créer une nouvelle page ! 
+On remarquera cependant qu'il existe un fichier suplémentaire par rapport à notre home page ; le fichier 'edit-task-modal.module.ts'.
 
+Or c'est dans ce fichier qu'on va importer et déclarer les page et composant qu'on pourra utiliser dans notre page. Le fait que le dossier home n'en contienne pas est donc assez génant si on veut utiliser la page d'édition de tâche. On va donc créer ce fichier nous même. Ou plutôt, on va copier [l'exemple de la doc](https://ionicframework.com/docs/api/IonicModule/) dans un nouveau fichier nommé home.module.ts dans le dossier pages/home. Contrôlez bien quand même que la classe de votre home est bien HomePage, sinon adaptez le fichier en conséquence.
+
+Bien, maintenant il faut changer le fichier src/app.module.ts car il n'utilise pas le fichier qu'on vien de créer mais importe directement la classe HomePage. Du coup on aura beau déclarer les composants et pages qu'on veut utiliser dans notre fichier, ça ne changera rien au resultat : une erreur à propos d'une élément non déclaré.
+
+Donc, dans notre fichier src/app/app.module.ts, on supprime tout ce qui fait référence a HomePage. Puis on import le fichier src/pages/home/home.module et on déclare le module dans imports.
+
+Votre fichier devrait ressembler à ceci : 
 ```TypeScript
-src/app/app.module.ts
-...
+//src/app/app.module.ts
+
+import { BrowserModule } from '@angular/platform-browser'
+import { ErrorHandler, NgModule } from '@angular/core'
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular'
+import { SplashScreen } from '@ionic-native/splash-screen'
+import { StatusBar } from '@ionic-native/status-bar'
+
 import { MyApp } from './app.component'
-import { HomePage } from '../pages/home/home'
-import { EditTaskModalPage } from '../pages/edit-task-modal/edit-task-modal'
+//import { HomePage } from '../pages/home/home' <==== on supprime cette ligne
+import { HomePageModule } from '../pages/home/home.mofule' // on importe le module
 
 @NgModule({
   declarations: [
     MyApp,
-    HomePage,
-    EditTaskModalPage // on ajoute cette ligne
+    //HomePage  <===== on supprime celle là aussi
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    HomePageModule // On déclare le module
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage,
-    EditTaskModalPage // et cette ligne
+    //HomePage <======= enfin on supprime celle ci
   ],
   providers: [
     StatusBar,
@@ -231,33 +246,78 @@ import { EditTaskModalPage } from '../pages/edit-task-modal/edit-task-modal'
 })
 export class AppModule {}
 ```
+Si vous sauvegardez, normalement, rien n'à changé. Ou presque. Maintenant ionic utilise le lazy loading et chargera en prioritée les premières pages et composants qui seront affichés en premier, au lieu de bloquer le démarrage de l'application jusqu'a ce que tout soit chargé, ce qui améliore grandement le temps de démarrage de l'application.
 
-On a plus qu'a l'afficher dans le modal [comme indiqué sur la doc](https://ionicframework.com/docs/components/#modals).
+On a déclaré notre page dans app.module.ts. Maintenant il faut faire pareil avec notre page d'edition de tâche dans pages/home/home.module.ts pour pouvoir enfin l'utiliser.
+Si vous suivez, votre fichier pages/home/home.module.ts devrait ressembler à ceci :
 
 ```TypeScript
-home.ts
-import { Component } from '@angular/core';
-import { NavController, ModalController } from 'ionic-angular';
-import { EditTaskModalPage } from '../edit-task-modal/edit-task-modal'
-...
+//src/pages/home/home.module.ts
 
-constructor (
-    public navCtrl: NavController,
-    public modalCtrl: ModalController // on injecte le modal controller
-) {
+import { NgModule } from '@angular/core'
+import { IonicPageModule } from 'ionic-angular'
+import { HomePage } from './home'
 
-}
+import { EditTaskModalPageModule } from '../edit-task-modal/edit-task-modal.module' // on import le module du modal
 
-addTask () {
-    let modal = this.modalCtrl.create(EditTaskModalPage)
-    modal.present()
-}
+@NgModule({
+    declarations: [
+        HomePage
+    ],
+    imports: [
+        IonicPageModule.forChild(HomePage),
+        EditTaskModalPageModule // on declare le module
+    ],
+    entryComponents: [
+        HomePage
+    ]
+})
+export class HomePageModule { }
 ```
 
-Maintenant notre nouvelle page s'affiche au-dessus, il n'y a plus qu'a modifier son contenu.
+Voilà, notre page est enfin prête à etre utilisée.
+
+On a plus qu'a l'afficher dans le modal [comme indiqué sur la doc](https://ionicframework.com/docs/components/#modals). 
+
+Pour le coup la doc est un peu en retard par rapport à ce guide.
+En effet dans l'exemple de la doc on importe directement la classe de la page à afficher alors que nous, nous utilisons les modules et le lazy loading. Ce qui fait qu'au lieu d'importer la classe nous n'allons rien importer du tout puisqu'on s'est déjà chargé des déclarations et imports de modules dans le fichier home.module.ts. Enfin, au lieu de passer la classe EditTaskModalPage en paramètre de create(), nous allons passer une string 'EditTaskModalPage'. Ionic reconnaitra qu'il s'agit de la page.
+
+On obtient donc dans notre fichier home.ts ceci :
+
+```TypeScript
+//home.ts
+import { Component } from '@angular/core';
+import { NavController, ModalController } from 'ionic-angular';
+
+@Component({
+  selector: 'page-home',
+  templateUrl: 'home.html'
+})
+
+export class HomePage {
+
+  tasks = []
+
+  constructor (
+    public navCtrl: NavController,
+    public modalCtrl: ModalController
+  ) {
+    
+  }
+
+  addTask () {
+    let modal = this.modalCtrl.create('EditTaskModalPage')
+    modal.present()
+  }
+
+}
+
+```
+
+Maintenant quand on clique sur notre bouton +, notre nouvelle page s'affiche au-dessus, il n'y a plus qu'a modifier son contenu.
 
 ```HTML
-edit-task-modal.html
+<!--edit-task-modal.html-->
 <ion-header>
 
   <ion-navbar>
@@ -285,11 +345,11 @@ edit-task-modal.html
 </ion-content>
 ```
 
-Quelques nouveautées ici. Tout d'abord l'usage de la directive ``showWhen`` qui permet de ne montrer un element que sur certain os. Mais surtout l'usage de la directive ``[(ngModel)]`` qui permet de lier le contenu du champ de text a la variable taskText. Ainsi, si la valeur de taskText change, la valeur du champ changera, et inversement. Enfin, il y a la directive ``[disabled]`` du bouton Valider qui permet de desactiver un bouton seulement si la condition est remplie.
+Quelques nouveautées ici. Tout d'abord l'usage de la directive ``showWhen`` qui permet de ne montrer un element que sur certain os. Mais surtout l'usage de la directive ``[(ngModel)]`` qui permet de lier le contenu du champ de text a la variable taskText. Ainsi, si la valeur de taskText change, la valeur de la variable changera, et inversement. Enfin, il y a la directive ``[disabled]`` du bouton Valider qui permet de desactiver un bouton seulement si la condition est remplie.
 
 Passons maintenant au script du modal :
 ```TypeScript
-edit-task-modal.ts
+//edit-task-modal.ts
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'; // On oublie pas d'importer ViewConroller
 ...
 export class EditTaskModalPage {
@@ -308,7 +368,7 @@ export class EditTaskModalPage {
   }
 
   validate () {
-    this.viewCtrl.dismiss(this.taskText) // On ferme le modal en renvoyant le texte dans le champ.
+    this.viewCtrl.dismiss(this.taskText) // On ferme le modal en renvoyant en parametre la valeur de taskText.
   }
 
 }
@@ -317,7 +377,7 @@ export class EditTaskModalPage {
 Enfin on modifie la fonction addTask() de home.ts
 
 ```TypeScript
-home.ts
+//home.ts
 addTask () {
     let modal = this.modalCtrl.create(EditTaskModalPage)
 
@@ -334,4 +394,5 @@ addTask () {
 
 Voilà, on peut maintenant ajouter une tâche. 
 
-Maintenant, débrouillez-vous pour que lorsqu'on clique sur une tâche elle sois supprimé de la liste ou barré. Et faire en sorte qu'on puisse éditer une tâche. Petit indice, regardez du coté de navParam.
+Maintenant, débrouillez-vous pour que lorsqu'on clique sur une tâche elle sois supprimé de la liste. 
+
