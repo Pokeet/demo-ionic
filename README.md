@@ -194,6 +194,8 @@ addTask () {
 
 Maintenant lorsque vous appuyez sur le bouton vous devriez voir 'hello' apparaitre dans votre terminal. C'est un début... C'est l'heure d'ouvrir un [modal](https://ionicframework.com/docs/components/#modals) et de créer une nouvelle page !
 
+#### Le Modal
+
 Un petit coup de ``ionic help`` nous apprend qu'il existe une commande generate qui permet de generer des pages, des directives, des composants ect ect... Essayons :
 
 ```
