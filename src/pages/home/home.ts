@@ -29,8 +29,11 @@ export class HomePage {
     modal.present()
   }
 
-  toggleTask () {
-
+  deleteTask (task) {
+    let index = this.tasks.indexOf(task)
+    if (index > -1) {
+      this.tasks.splice(index)
+    }
   }
 
 }

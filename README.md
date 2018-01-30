@@ -398,4 +398,18 @@ Voilà, on peut maintenant ajouter une tâche.
 
 Maintenant, débrouillez-vous pour que lorsqu'on clique sur une tâche elle sois supprimé de la liste. 
 
->! spoiler
+<details>
+    <summary>Solution. Ne cliquez pas sans avoir essayé.</summary>
+    Bien, pour supprimer une tâche quand on clique dessus, il faut tout d'abord créer une méthode dans le fichier home.ts. Appellons la deleteTask. Cette méthode dois prendre en paramètre la tâche à supprimer et la retirer du tableau tasks.
+    On obtient donc ceci : 
+    <code><pre>
+    //home.ts
+    ...
+    deleteTask (task) {
+        this.tasks.remove(task);
+    }
+    </pre></code>
+    Ensuite dans home.html, on ajoute un appel a cette méthode sur le click de l'item de la listcomme ceci :
+
+    <button ion-item *ngFor="let task of tasks" (click)="deleteTask()">
+</details>
