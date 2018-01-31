@@ -396,6 +396,8 @@ addTask () {
 
 Voilà, on peut maintenant ajouter une tâche. 
 
+#### Petit exo 
+
 Maintenant, débrouillez-vous pour que lorsqu'on clique sur une tâche elle sois supprimé de la liste. 
 
 <details>
@@ -413,3 +415,87 @@ Maintenant, débrouillez-vous pour que lorsqu'on clique sur une tâche elle sois
 
     <button ion-item *ngFor="let task of tasks" (click)="deleteTask()">
 </details>
+
+## Création d'un composant maison
+
+On arrive à créer et ajouter une tâche. Maintenant on aimerait bien rendre notre item un peu plus complexe et améliorer l'expérience utilisateur. 
+On pourrait écrire le comportement de l'item dans home.ts et le template dans home.html mais c'est ni très propre, ni réutilisable.
+
+On va donc créer un composant.
+
+Pour cela on va utiliser le générateur de ionic à nouveau :
+```shell
+ionic g component todo-item
+```
+
+Un nouveau dossier nommé "components" est créé. Dans ce dossier deux éléments : le dossier todo-item qui contient le code de notre nouveau composant et le fichier components.module.ts. On va supprimer ce dernier car il permet de charger tous nos composants d'un coup, or nous on utilise le lazy loading pour charger les composants seulement quand on en a besoin.
+
+Dans le dossier todo-item on va créer un nouveau fichier "todo-item.module.ts" qui va nous permettre d'importer notre composant. Le contenu de ce fichier dois être le suivant : 
+
+```TypeScript
+//todo-item.module.ts
+import { NgModule } from '@angular/core'
+import { IonicModule } from 'ionic-angular'
+import { TodoItemComponent } from './todo-item'
+
+@NgModule({
+    declarations: [
+        TodoItemComponent,
+    ],
+    imports: [
+        IonicModule,
+    ],
+    exports: [
+        TodoItemComponent
+    ]
+})
+export class TodoItemComponentModule {}
+```
+
+Maintenant on va ouvrir notre fichier todo-item.html pour voir le template.
+```html
+<!--todo-item.html-->
+<div>
+    {{ text }}
+</div>
+```
+Maintenant si vous ouvrez le fichier todo-item.ts vous verrez que "hello-world" est assigné a la variable text. 
+
+Bref, ça fonctionne exactement comme une page tout ça. En fait, les pages sont des composants angular.
+
+On va changer un peu le template par ceci :
+```html
+<!--todo-item.html-->
+<button ion-item>
+    <ng-content></ng-content>
+</button>
+```
+
+Puis dans home.html on va remplacer le boutton de notre liste par notre nouveau composant.
+
+```html
+<!--home.html-->
+....
+<todo-item *ngFor="let task of tasks" (click)="deleteTask(task)">
+    {{ task }}
+</todo-item>
+```
+
+Bim, erreur. todo-item n'est pas un élément connu... C'est parcequ'on l'a pas encore importé !
+
+On va donc dans home.module.ts pour ajouter notre composant dans la liste des module a importé, comme on l'a fait avant pour la page d'edition de tâche.
+```TypeScript
+//home.module.ts
+...
+import { TodoItemComponentModule } from '../../components/todo-item/todo-item.module'
+...
+    imports: [
+        IonicPageModule.forChild(HomePage),
+        EditTaskModalPageModule,
+        TodoItemComponentModule
+    ],
+```
+
+Voilà. Maintenant il faut rédémarrer le ionic lab parceque l'aperçu en temps reel bug un peu lorsqu'on ajoute de nouveau module et risque de vous signler des erreurs qui n'existes pas. 
+
+Et donc, par rapport à avant, ça n'a pas changé grand chose... Mais au moins on a créer notre propre composant qu'on va pouvoir customiser dès maintenant.
