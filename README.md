@@ -471,6 +471,8 @@ On va changer un peu le template par ceci :
 </button>
 ```
 
+Le composent ng-content va afficher le contenu qui se trouvera entre les deux balise de votre composant.
+
 Puis dans home.html on va remplacer le boutton de notre liste par notre nouveau composant.
 
 ```html
@@ -499,3 +501,60 @@ import { TodoItemComponentModule } from '../../components/todo-item/todo-item.mo
 Voilà. Maintenant il faut rédémarrer le ionic lab parceque l'aperçu en temps reel bug un peu lorsqu'on ajoute de nouveau module et risque de vous signler des erreurs qui n'existes pas. 
 
 Et donc, par rapport à avant, ça n'a pas changé grand chose... Mais au moins on a créer notre propre composant qu'on va pouvoir customiser dès maintenant.
+
+Pour commencer, plutôt que supprimer la tâche quand on clique dessus, on voudrait la barrer. On peut donc déjà supprimer le listener sur le click qui delete la tache pour obenir ceci : 
+
+```html
+<!--home.html-->
+....
+<todo-item *ngFor="let task of tasks">
+    {{ task }}
+</todo-item>
+```
+
+Ensuite, on va créer un champ dans la class de TodoItemComponent pour stocker si la tâche est complétée ou non.
+
+```TypeScript
+//todo-item.ts
+...
+export class TodoItemComponent {
+    complete: boolean
+
+    constructor () {
+        this.complete = false
+    }
+...
+```
+
+On va aussi ajouter une méthode qu'on appelera au click pour inverser l'état de completion de la tâche :
+
+```TypeScript
+//todo-item.ts
+...
+    toggleCompletion () {
+        this.complete = !this.complete
+    }
+...
+```
+
+On va maintenant déclancher cette fonction au click de notre item :
+
+```html
+<button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
+    {{ task }}
+</button>
+```
+
+Notez la directive [ngClass]="{'done':complete}". Cette directive nous permet d'ajouter des classes css ou non en fonction d'une condition (ici le boolean complete). On peut en ajouter plusieur en les séparant par des vrgules comme ceci : {'classA': true, 'classB': conditionA || conditionB} ....
+
+Il ne nous reste plus qu'a écrire cette class css dans le fichier de style todo-item.scss :
+
+```scss
+//todo-item.scss
+todo-item {
+    .done {
+        text-decoration: line-through;
+        background-color: color($colors, secondary, base);
+    }
+}
+```
