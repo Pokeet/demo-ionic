@@ -17,12 +17,22 @@ export class HomePage {
     
   }
 
-  addTask () {
-    let modal = this.modalCtrl.create('EditTaskModalPage')
+  editTask (task) {
+    let navParams = null
+    let taskId = -1
+    if (task != null) {
+      navParams = {
+        task
+      }
+      taskId = this.tasks.indexOf(task)
+    }
+    let modal = this.modalCtrl.create('EditTaskModalPage', navParams)
 
     modal.onDidDismiss(data => {
-      if (data != null && data != '') {
+      if (data != null && data != '' && taskId == -1) {
         this.tasks.push(data)
+      } else {
+        this.tasks[taskId] = data
       }
     })
 
@@ -35,5 +45,6 @@ export class HomePage {
       this.tasks.splice(index)
     }
   }
+
 
 }

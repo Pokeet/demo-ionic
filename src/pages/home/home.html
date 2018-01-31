@@ -8,10 +8,10 @@
 
 <ion-content padding>
   <ion-list>
-    <todo-item *ngFor="let task of tasks" [task]="task"></todo-item>
+    <todo-item *ngFor="let task of tasks" [task]="task" (onDelete)="deleteTask($event)" (onEdit)="editTask($event)"></todo-item>
   </ion-list>
 
-  <ion-fab bottom right (click)="addTask()">
+  <ion-fab bottom right (click)="editTask()">
     <button ion-fab>
       <ion-icon name="add"></ion-icon>
     </button>

@@ -1,4 +1,18 @@
 <!-- Generated template for the TodoItemComponent component -->
-<button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
-  {{ task }}
-</button>
+<ion-item-sliding #slidingItem>
+  <button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
+    {{ task }}
+  </button>
+  <ion-item-options side="left">
+    <button ion-button color="danger" (click)="sendDelete(slidingItem)">
+      <ion-icon name="trash"></ion-icon>
+      Supprimer
+    </button>
+  </ion-item-options>
+  <ion-item-options side="right">
+    <button ion-button color="secondary" (click)="sendEdit(slidingItem)">
+      <ion-icon name="create"></ion-icon>
+      Modifier
+    </button>
+  </ion-item-options>
+</ion-item-sliding>

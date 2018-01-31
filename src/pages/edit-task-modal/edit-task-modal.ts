@@ -22,6 +22,10 @@ export class EditTaskModalPage {
     public navParams: NavParams,
     public viewCtrl: ViewController
   ) {
+    let text = this.navParams.get('task')
+    if (text != null) {
+      this.taskText = text
+    }
   }
 
   cancel () {
