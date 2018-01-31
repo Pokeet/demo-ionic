@@ -14,7 +14,7 @@ import { HomePageModule } from '../pages/home/home.module'
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
-    HomePageModule
+    HomePageModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [

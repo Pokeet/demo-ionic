@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 /**
  * Generated class for the TodoItemComponent component.
@@ -12,10 +12,15 @@ import { Component } from '@angular/core';
 })
 export class TodoItemComponent {
 
-  text: string;
+  @Input() task: string
+  complete: boolean
 
-  constructor() {
-    this.text = 'Hello World';
+  constructor () {
+    this.complete = false
+  }
+
+  toggleCompletion () {
+    this.complete = !this.complete
   }
 
 }

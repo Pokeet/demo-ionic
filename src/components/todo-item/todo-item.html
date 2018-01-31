@@ -1,4 +1,4 @@
 <!-- Generated template for the TodoItemComponent component -->
-<div>
-  {{text}}
-</div>
+<button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
+  {{ task }}
+</button>

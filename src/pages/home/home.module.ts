@@ -3,6 +3,7 @@ import { IonicPageModule } from 'ionic-angular'
 import { HomePage } from './home'
 
 import { EditTaskModalPageModule } from '../edit-task-modal/edit-task-modal.module'
+import { TodoItemComponentModule } from '../../components/todo-item/todo-item.module'
 
 @NgModule({
     declarations: [
@@ -10,7 +11,8 @@ import { EditTaskModalPageModule } from '../edit-task-modal/edit-task-modal.modu
     ],
     imports: [
         IonicPageModule.forChild(HomePage),
-        EditTaskModalPageModule
+        EditTaskModalPageModule,
+        TodoItemComponentModule
     ],
     entryComponents: [
         HomePage

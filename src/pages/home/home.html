@@ -8,9 +8,7 @@
 
 <ion-content padding>
   <ion-list>
-    <button ion-item *ngFor="let task of tasks" (click)="deleteTask(task)">
-      {{ task }}
-    </button>
+    <todo-item *ngFor="let task of tasks" [task]="task"></todo-item>
   </ion-list>
 
   <ion-fab bottom right (click)="addTask()">

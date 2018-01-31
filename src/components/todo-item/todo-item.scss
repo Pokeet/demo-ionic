@@ -1,3 +1,6 @@
 todo-item {
-
+    .done {
+        text-decoration: line-through;
+        background-color: color($colors, secondary, base);
+    }
 }
