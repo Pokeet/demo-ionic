@@ -53,7 +53,7 @@ Bien, maintenant que tout est généré et installé ionic vous demande si vous 
 Le boilerplate est prêt :sunglasses: !
 
 ## Live reload
-Ionic est un framework web frontend et utilise webpack pour générer l'application. Webpack quant à lui peut vérifier les sources du projet et regénérer l'application si celle-ci changes, et déclancher un rechargement de la page. Tout ceci nous permet de voir en temps réel les effets de ce que nous somme en train de coder directement sur l'application.
+Ionic est un framework web frontend et utilise webpack pour générer l'application. Webpack quant à lui peut vérifier les sources du projet et regénérer l'application si celle-ci changes, et déclencher un rechargement de la page. Tout ceci nous permet de voir en temps réel les effets de ce que nous somme en train de coder directement sur l'application.
 
 Testons cela sans plus attendre !
 
@@ -541,7 +541,7 @@ On va aussi ajouter une méthode qu'on appelera au click pour inverser l'état d
 ...
 ```
 
-On va maintenant déclancher cette fonction au click de notre item :
+On va maintenant déclencher cette fonction au click de notre item :
 
 ```html
 <button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
@@ -694,8 +694,96 @@ Retour au fichier home.html donc :
 <!--home.html -->
 ...
 <ion-list>
-    <todo-item *ngFor="let task of tasks" [task]="task" (onDelete)="deleteTask()" (onEdit)="editTask()"></todo-item>
-    <!-- On a ajouté les deux directives (onDelete)="deleteTask()" et (onEdit)="editTask() -->
+    <todo-item *ngFor="let task of tasks" [task]="task" (onDelete)="deleteTask(task)" (onEdit)="editTask(task)"></todo-item>
+    <!-- On a ajouté les deux directives (onDelete)="deleteTask(task)" et (onEdit)="editTask(task) -->
   </ion-list>
 ...
 ```
+
+On a déjà la méthode deleteTask de déclarée dans notre fichier home.ts et la méthode addTask. On va renommer cette méthode en editTask (penser à renommer la fonction appellé dans le bouton d'ajout de tâche aussi) et la modifier pour qu'elle prenne en parametre une tache. 
+
+De cette façon on pourra ouvrir le meme modal en mode "ajout" ou "edition" de tache en lui passant en parametre d'ouverture une tache ou non.
+
+```TypeScript
+// home.ts
+editTask (task) {
+    let navParams = null // navParams est l'objet qu'on va envoyer en parametre au modal
+    let taskId = -1
+    if (task != null) {
+        navParams = {
+            task // on ajoute la tâche dans notre objet de parametrage du modal
+        }
+        taskId = this.tasks.indexOf(task) // on recupère l'index de la tâche dans le tableau de tâche pour pouvoir la mettre à jour avec la réponse du modal quand on le fermera
+    }
+    let modal = this.modalCtrl.create('EditTaskModalPage', navParams) // on ouvre le modal avec notre objet en second parametre.
+
+    modal.onDidDismiss(data => {
+        if (data != null && data != '' && taskId == -1) { // si taskId est == a -1 c'est qu'on a pas passé de tache en paramettre de la fonction et donc qu'il s'agit d'une nouvelle tâche. On l'ajoute a la liste.
+            this.tasks.push(data)
+        } else { // en revanche si on a une taskId > -1 c'est qu'on a passé une tache en paramètre, on remplace donc l'index corespondant dans la lsite
+            this.tasks[taskId] = data
+        }
+    })
+
+    modal.present()
+}
+```
+
+Enfin on corrige le fichier edit-task-modal.ts pour qu'il prenne en compte ce paramètre à l'ouverture :
+
+```TypeScript
+// edit-task-modal.ts
+import { Component } from '@angular/core';
+
+// On importe NavParams, c'est la classe qui va nous permettre de lire les parameètre d'ouverture
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+
+
+@IonicPage()
+@Component({
+  selector: 'page-edit-task-modal',
+  templateUrl: 'edit-task-modal.html',
+})
+export class EditTaskModalPage {
+
+  taskText : any
+
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams, // On injecte le NavParams pour pouvoir l'utiliser
+    public viewCtrl: ViewController
+  ) {
+    let text = this.navParams.get('task') // On récupère le texte de la tâche envoyé en parametre
+    if (text != null) { 
+      this.taskText = text // on remplace le texte vide par celui de la tâche envoyée en paramètre
+    }
+  }
+
+  cancel () {
+    this.viewCtrl.dismiss()
+  }
+
+  validate () {
+    this.viewCtrl.dismiss(this.taskText)
+  }
+
+}
+```
+
+Et voilà, c'est tout. 
+Maintenant on peut supprimer et éditer un tâche.
+
+---
+# A venir ...
+## Gestion et Conservation des données
+### Providers
+
+## Consulter une api
+### Http et Promise
+
+---
+Avoir installé les sdk Android ou iOs avant ces deux parties
+
+## Build avec Cordova
+
+## Plugin natif 

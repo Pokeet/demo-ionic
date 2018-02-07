@@ -1,7 +1,7 @@
 <!-- Generated template for the TodoItemComponent component -->
 <ion-item-sliding #slidingItem>
   <button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
-    {{ task }}
+    <ng-content></ng-content>
   </button>
   <ion-item-options side="left">
     <button ion-button color="danger" (click)="sendDelete(slidingItem)">

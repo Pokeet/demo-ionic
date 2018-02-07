@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output} from '@angular/core';
+import { Component, EventEmitter, Output} from '@angular/core';
 import { ItemSliding } from 'ionic-angular/components/item/item-sliding';
 
 /**
@@ -13,8 +13,6 @@ import { ItemSliding } from 'ionic-angular/components/item/item-sliding';
 })
 export class TodoItemComponent {
 
-  @Input() task: string
-  
   @Output() onEdit = new EventEmitter<string>()
   @Output() onDelete = new EventEmitter<string>()
 
@@ -30,12 +28,12 @@ export class TodoItemComponent {
 
   sendDelete (item: ItemSliding) {
     item.close()
-    this.onDelete.emit(this.task)
+    this.onDelete.emit()
   }
 
   sendEdit (item: ItemSliding) {
     item.close()
-    this.onEdit.emit(this.task)
+    this.onEdit.emit()
   }
 
 }
