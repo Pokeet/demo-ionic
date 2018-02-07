@@ -418,6 +418,8 @@ Maintenant, débrouillez-vous pour que lorsqu'on clique sur une tâche elle sois
 
 ## Création d'un composant maison
 
+### Configuration
+
 On arrive à créer et ajouter une tâche. Maintenant on aimerait bien rendre notre item un peu plus complexe et améliorer l'expérience utilisateur. 
 On pourrait écrire le comportement de l'item dans home.ts et le template dans home.html mais c'est ni très propre, ni réutilisable.
 
@@ -485,7 +487,7 @@ Puis dans home.html on va remplacer le boutton de notre liste par notre nouveau 
 
 Bim, erreur. todo-item n'est pas un élément connu... C'est parcequ'on l'a pas encore importé !
 
-On va donc dans home.module.ts pour ajouter notre composant dans la liste des module a importé, comme on l'a fait avant pour la page d'edition de tâche.
+On va donc dans home.module.ts pour ajouter notre composant dans la liste des module a importer, comme on l'a fait avant pour la page d'edition de tâche.
 ```TypeScript
 //home.module.ts
 ...
@@ -498,9 +500,11 @@ import { TodoItemComponentModule } from '../../components/todo-item/todo-item.mo
     ],
 ```
 
-Voilà. Maintenant il faut rédémarrer le ionic lab parceque l'aperçu en temps reel bug un peu lorsqu'on ajoute de nouveau module et risque de vous signler des erreurs qui n'existes pas. 
+Voilà. Maintenant il faut rédémarrer le ionic lab parceque l'aperçu en temps reel bug un peu lorsqu'on ajoute de nouveau module et risque de vous signaler des erreurs qui n'existes pas. 
 
 Et donc, par rapport à avant, ça n'a pas changé grand chose... Mais au moins on a créer notre propre composant qu'on va pouvoir customiser dès maintenant.
+
+### Edition du template et du comportement
 
 Pour commencer, plutôt que supprimer la tâche quand on clique dessus, on voudrait la barrer. On peut donc déjà supprimer le listener sur le click qui delete la tache pour obenir ceci : 
 
@@ -558,3 +562,83 @@ todo-item {
     }
 }
 ```
+
+Et voilà, maintenant, si on clique sur  la tâche, celle-ci sera rayé et le fond changera de couleur.
+
+Le soucis c'est que maintenant on ne peut plus supprimer la tâche de notre liste. Seulement la rayer. Et ça serait bien aussi de pouvoir l'éditer. On va ajouter deux boutons pour ces actions.
+
+Plutôt que mettre les boutons directement sur la tâche et perdre un peu d'espace pour le texte, on va les cacher et les faire apparaitre seulement lorsqu'on swipera la tâche à gauche ou à droite.
+
+Il y a un composant tout fait pour ça, la [sliding list](https://ionicframework.com/docs/components/#sliding-list).
+
+On edite donc le template de notre composant afin d'obtenir ceci :
+
+```html
+<!--todo-item.html-->
+<ion-item-sliding>
+  <button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
+    <ng-content></ng-content>
+  </button>
+  <ion-item-options side="left">
+    <button ion-button color="danger">
+      <ion-icon name="trash"></ion-icon>
+      Supprimer
+    </button>
+  </ion-item-options>
+  <ion-item-options side="right">
+    <button ion-button color="secondary">
+      <ion-icon name="create"></ion-icon>
+      Modifier
+    </button>
+  </ion-item-options>
+</ion-item-sliding>
+```
+
+Voilà, on a nos deux boutons à gauche et à drite de notre tâche selon la direction dans laquelle on swipe. On va maintenant brancher des évennements sur ces boutons pour modifier ou supprimer la tâches. Comme d'habitude, on fait ça avec une directive d'evenement : des parenthèses autour de l'event à binder :
+
+```html
+<!--todo-item.html-->
+<ion-item-sliding>
+  <button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
+    {{ task }}
+  </button>
+  <ion-item-options side="left">
+    <button ion-button color="danger" (click)="onClickDelete()"> <!-- onClickDelete, la fonction du fichier todo-item.ts qui sera appellé quand on cliquera sur la poubelle -->
+      <ion-icon name="trash"></ion-icon>
+      Supprimer
+    </button>
+  </ion-item-options>
+  <ion-item-options side="right">
+    <button ion-button color="secondary" (click)="onClickEdit()"> <!-- Même principe -->
+      <ion-icon name="create"></ion-icon>
+      Modifier
+    </button>
+  </ion-item-options>
+</ion-item-sliding>
+```
+
+On ajoute maintenant ces deux méthodes dans notre fichier todo-item.ts :
+
+```TypeScript
+// todo-item.ts
+...
+  toggleCompletion () {
+    this.complete = !this.complete
+  }
+
+  onClickDelete () {
+  }
+
+  sendEdit () {
+  }
+```
+
+Bien. Et maintenant ? Maintenant, on est bloqué. 
+
+En effet on n'a aucun moyen de modifier la liste des tâches depuis notre composant puisqu'on à aucune référence vers celle-ci pour la manipuler. Et puis même si on en avait une, ca ne serait pas une pratique très propre et en accord avec le design pattern des observateurs qu'Angular applique.
+
+Alors comment faire ? 
+
+On va signaler au composant qui contient notre composant, son parent, qu'un de nos boutons a été cliqué. C'est le parent qui décidera quoi faire de cette information.
+
+## Les Events
