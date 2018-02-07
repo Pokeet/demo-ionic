@@ -629,7 +629,7 @@ On ajoute maintenant ces deux méthodes dans notre fichier todo-item.ts :
   onClickDelete () {
   }
 
-  sendEdit () {
+  onClickEdit () {
   }
 ```
 
@@ -642,3 +642,60 @@ Alors comment faire ?
 On va signaler au composant qui contient notre composant, son parent, qu'un de nos boutons a été cliqué. C'est le parent qui décidera quoi faire de cette information.
 
 ## Les Events
+
+Les events sont des signaux qu'on va envoyer à tous les composant qui les écoutes. Vous vous souvenez des directives (click)="action()" qu'on à utilisé avant pour réagir au click d'un bouton ? Et bien c'est ça un event, et on va apprendre à déclarer les notres.
+
+### Déclarer un event
+
+Pour déclarer un event dans notre composant, il faut instancier un émetteur d'event dans une variable précédée du décorateur "@Output()". Ce qui donne : 
+
+```TypeScript
+@Output() monEvent = new EventEmitter<string>()
+```
+
+Pour notre composant on va donc déclarer deux émetteurs : un pour la suppression et un pour l'édition.
+
+```TypeScript
+// todo-item.ts
+...
+export class TodoItemComponent {
+
+  @Output() onEdit = new EventEmitter<string>() //  nos deux
+  @Output() onDelete = new EventEmitter<string>() // event emitter 
+
+  complete: boolean
+
+  constructor () {
+    this.complete = false
+  }
+...
+```
+
+Une fois nos émetteur déclarés, on a plus qu'a les utiliser pour émettres les events vers le parent : 
+
+```TypeScript
+// todo-item.ts
+...
+  onClickDelete () {
+    this.onDelete.emit()
+  }
+
+  onClickEdit () {
+    this.onEdit.emit()
+  }
+...
+```
+
+Nos events seront maintenant émis quand on cliquera sur les boutons. Il ne reste plus qu'a les intercepter dans notre page et agir en fonction du signal reçu.
+
+Retour au fichier home.html donc :
+
+```html
+<!--home.html -->
+...
+<ion-list>
+    <todo-item *ngFor="let task of tasks" [task]="task" (onDelete)="deleteTask()" (onEdit)="editTask()"></todo-item>
+    <!-- On a ajouté les deux directives (onDelete)="deleteTask()" et (onEdit)="editTask() -->
+  </ion-list>
+...
+```
