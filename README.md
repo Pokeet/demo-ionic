@@ -773,10 +773,14 @@ export class EditTaskModalPage {
 Et voilà, c'est tout. 
 Maintenant on peut supprimer et éditer un tâche.
 
----
-# A venir ...
+
 ## Gestion et Conservation des données
 ### Providers
+Les fonctions de base de notre application sont en place. On peut ajouter, supprimer et éditer une tâche. L'ennui c'est qu'en quittant l'application nous perdons toutes nos données. De plus toute nos données sont gérées par la page de la liste des tâches, ce qui n'est pas très pratique si on veut pouvoir accéder ou modifier ces données depuis une autre page par exemple. On va donc aborder une nouveau concept : Les providers.
+
+Les providers sont des classes qui vont nous permettre de gérer les données de notre app et d'y acceder depuis n'importe quelle page ou composant.
+
+
 
 ## Consulter une api
 ### Http et Promise
