@@ -1012,7 +1012,7 @@ Pour utiliser les requete http commencez par decommenter les lignes relatives a 
 Il faut aussi modifier le fichier app.module.ts pour ajouter httpClient a la liste des import et provider, comme ceci :
 
 ```TypeScript
-\\ app.module.ts
+// app.module.ts
 import { BrowserModule } from '@angular/platform-browser'
 import { ErrorHandler, NgModule } from '@angular/core'
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular'
@@ -1056,7 +1056,7 @@ export class AppModule {}
 Quant à votre tasks.ts il devrai ressembler à ceci :
 
 ```TypeScript
-import { HttpClient } from '@angular/common/http';` // ajouter cet import
+import { HttpClient } from '@angular/common/http'; // ajouter cet import
 
 
 @Injectable()
