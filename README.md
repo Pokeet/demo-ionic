@@ -780,7 +780,143 @@ Les fonctions de base de notre application sont en place. On peut ajouter, suppr
 
 Les providers sont des classes qui vont nous permettre de gérer les données de notre app et d'y acceder depuis n'importe quelle page ou composant.
 
+```
+ionic g provider TasksProvider
+```
 
+Cette commande va générer le dossier "providers" et "tasks" dans lequel on trouvera le fichier tasks.ts.
+On notera que la commande mettra également a jour le fichier app.module.ts afin qui nous puissiont injecter et utiliser notre provider dans nos pages sans faire les modification du app.module.ts manuellement. Normalement il faut importer le provider dans ce fichier et l'ajouter a la liste des providers dans l'objet de configuration ngModules.
+
+Dans providers/tasks/tasks.ts, commentez les ligne relatives a httpclient, on ne vas pas l'utiliser pour l'instant (un import et dans le constructeur)
+
+Bien, maintenant on peut importer notre provider dans notre home.ts.
+
+Ajoutez simplement cette ligne à la liste des imports : 
+```TypeScript
+// home.ts
+import { TasksProvider } from '../../providers/tasks/tasks'
+```
+
+Ensuite dans le constructeur de la page home on inject le provider :
+
+```TypeScript
+constructor (
+  public navCtrl: NavController,
+  public modalCtrl: ModalController,
+  public tasksProvider : TasksProvider // la ligne a ajouter
+)
+```
+
+On peut maintenant utiliser notre provider. Mais pour le moment il ne fait pas grand chose.
+Passons donc sur le fichier providers/tasks/tasks.ts.
+
+On comment par déclarer une liste pour stocker les tâches comme on l'a déjà fait dans home.ts :
+
+```TypeScript
+// providers/tasks/tasks.ts
+@Injectable()
+export class TasksProvider {
+
+  tasks : Array<string> // on déclare la liste des tâches
+
+  constructor (
+    // ...
+```
+
+On va maintenant écrire les méthodes qui vont nous permettre de manipuler nos tâches : récupération des tâches, ajout, recherche, edition et suppression. Se sont quasiment les même méthodes que ce que nous avons déjà écris dans home.ts mais cette fois nous ne nous soucierons pas de l'affichage.
+
+On obtient donc les méthodes suivante :
+
+```TypeScript
+// providers/tasks/tasks.ts
+  getTasks () { // pour le moment on renvois seulement un tableau prédéfinis
+    this.tasks = [
+      "Hodor !",
+      "HOODOOOOOOOOR !!",
+      "Hodor ?"
+    ]
+  }
+
+  addTask (task : string) { // ajout d'une task a la fin de la liste
+    this.tasks.push(task)
+  }
+
+  editTask (id, task : string) { // editer une tasks a partir de sa position dans le tabelau et le nouveau texte
+    if (task != "" && task != null) {
+      this.tasks[id] = task
+    }
+  }
+
+  findTask (text : string) { // trouver la position d'une task dans la liste
+    return this.tasks.indexOf(text)
+  }
+
+  deleteTask (task : string) { // efacer une task
+    let index = this.findTask(task)
+    if (index > -1) {
+      this.tasks.splice(index, 1)
+    }
+  }
+```
+
+Voilà, maintenant on peut remplacer notre liste de tache de home.ts par notre provider.
+
+Dans le constructeur on demande au provider de récupérer la liste des tâches :
+
+```TypeScript
+// home.ts
+  constructor (
+    public navCtrl: NavController,
+    public modalCtrl: ModalController,
+    public tasksProvider : TasksProvider
+  ) {
+    this.tasksProvider.getTasks();
+  }
+```
+
+Ensuite, partout ou il y'a ```this.tasks``` on va remplacer par la méthode de notre provider qui correspond.
+editTask() et deleteTask() resemble donc désormais à ceci : 
+
+```TypeScript
+// home.ts
+  editTask (task) {
+    let navParams = null
+    let taskId = -1
+    if (task != null) {
+      navParams = {
+        task
+      }
+      taskId = this.tasksProvider.findTask(task)
+    }
+    let modal = this.modalCtrl.create('EditTaskModalPage', navParams)
+
+    modal.onDidDismiss(data => {
+      if (data != null && data != '' && taskId == -1) {
+        this.tasksProvider.addTask(data)
+      } else {
+        this.tasksProvider.editTask(taskId, data)
+      }
+    })
+
+    modal.present()
+  }
+
+  deleteTask (task) {
+    this.tasksProvider.deleteTask(task)
+  }
+```
+
+Il faut également penser à mettre à jour le template de la page. En effet, celui-ci fait encore référence au champs tasks de home.ts que nous avons supprimé. Maintenant il faut faire référence à la liste du provider. C'est simple a changer ; dans notre todo-item on va dire de chercher le tableau tasks dans l'objet tasksProvider.tasks au lieu de simple tasks : 
+
+```html
+  <todo-item *ngFor="let task of tasksProvider.tasks" (onDelete)="deleteTask(task)" (onEdit)="editTask(task)">
+    {{ task }}
+  </todo-item>
+```
+
+## stocker les infos
+
+https://ionicframework.com/docs/storage/
 
 ## Consulter une api
 ### Http et Promise

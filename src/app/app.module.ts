@@ -3,9 +3,11 @@ import { ErrorHandler, NgModule } from '@angular/core'
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular'
 import { SplashScreen } from '@ionic-native/splash-screen'
 import { StatusBar } from '@ionic-native/status-bar'
+import { IonicStorageModule } from '@ionic/storage'
 
 import { MyApp } from './app.component'
 import { HomePageModule } from '../pages/home/home.module'
+import { TasksProvider } from '../providers/tasks/tasks';
 
 @NgModule({
   declarations: [
@@ -15,6 +17,7 @@ import { HomePageModule } from '../pages/home/home.module'
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HomePageModule,
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -23,7 +26,8 @@ import { HomePageModule } from '../pages/home/home.module'
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    TasksProvider
   ]
 })
 export class AppModule {}

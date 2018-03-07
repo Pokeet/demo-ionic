@@ -1,14 +1,14 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Super Todo
+      Hodor
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
   <ion-list>
-    <todo-item *ngFor="let task of tasks" (onDelete)="deleteTask(task)" (onEdit)="editTask(task)">
+    <todo-item *ngFor="let task of tasksProvider.tasks" (onDelete)="deleteTask(task)" (onEdit)="editTask(task)">
       {{ task }}
     </todo-item>
   </ion-list>
