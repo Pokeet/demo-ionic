@@ -30,7 +30,7 @@ export class TasksProvider {
       console.log(error)
     })*/
 
-    this.http.get('https://jsonplaceholder.typicode.com/todos').subscribe(
+    this.http.get('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos').subscribe(
       // subscribe prend deux callback en parametre, un pour le succes de la requete et un pour l'echec
       data => {
         this.tasks = data
@@ -40,7 +40,7 @@ export class TasksProvider {
   }
 
   addTask (task : any) {
-    this.http.post('https://jsonplaceholder.typicode.com/todos/', task).subscribe(
+    this.http.post('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos/', task).subscribe(
       data => {
         this.tasks.push(data)
       },
@@ -55,7 +55,7 @@ export class TasksProvider {
       let task = this.tasks[id]
       let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
       nextTaskState.title = title
-      this.http.put('https://jsonplaceholder.typicode.com/todos/' + task.id, nextTaskState).subscribe(data => {
+      this.http.put('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos/' + task.id, nextTaskState).subscribe(data => {
         this.tasks[id] = data
       }, error => {
         console.log(error)
@@ -67,7 +67,7 @@ export class TasksProvider {
     let task = this.tasks[id]
     let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
     nextTaskState.completed = !task.completed
-    this.http.put('https://jsonplaceholder.typicode.com/todos/' + task.id, nextTaskState).subscribe(data => {
+    this.http.put('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos/' + task.id, nextTaskState).subscribe(data => {
       this.tasks[id] = data
     }, error => {
       console.log(error)
@@ -81,10 +81,9 @@ export class TasksProvider {
   deleteTask (task : any) {
     let index = this.findTask(task)
     if (index > -1) {
-      this.http.delete('https://jsonplaceholder.typicode.com/todos/' + task.id).subscribe(
+      this.http.delete('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos/' + task.id).subscribe(
         data => {
           this.tasks.splice(index, 1)
-          console.log(data)
         },
         error => {
           console.log(error)

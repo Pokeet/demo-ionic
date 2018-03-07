@@ -1003,9 +1003,9 @@ Nous allons voir comment procéder dès maintenant.
 
 Une api REST est en fait un ensemble d'url a appeller depuis notre application pour échanger des données avec le serveur. Une meme url avec une méthode different (POST, GET, PUT ou DELETE) aura un effet different sur la ressource pointé par l'url. Par exemple appeller l'url http://api.demo.com/image1 avec la méthode GET nous renverra l'image alors qu'appeler la meme url avec le méthode DELETE l'effacera. Bien sur le serveur peut faire des vérifications d'authentification pour empêcher une personne de modifier certaine ressources ou non.
 
-Dans notre exemple nous allons utiliser une simlple api de démonstration : https://jsonplaceholder.typicode.com/
+Dans notre exemple nous allons utiliser une simlple api de démonstration : http://my-json-server.typicode.com/Pokeet/demo-ionic/
 
-Pour récupérer une liste de tache nous devrons donc entrer l'url suivante : https://jsonplaceholder.typicode.com/todos
+Pour récupérer une liste de tache nous devrons donc entrer l'url suivante : http://my-json-server.typicode.com/Pokeet/demo-ionic/todos
 
 Pour utiliser les requete http commencez par decommenter les lignes relatives a httpClient dans le tasksProvider (l'import et le constructeur)
 
@@ -1084,7 +1084,7 @@ export class TasksProvider {
   tasks : Array<any> // remplacer le type de tasks : Array<string> en Array<any>
 //...
   getTasks () {
-    this.http.get('https://jsonplaceholder.typicode.com/todos').subscribe(
+    this.http.get('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos').subscribe(
       // subscribe prend deux callback en parametre, un pour le succes de la requete et un pour l'echec
       data => {
         this.tasks = data
@@ -1288,7 +1288,7 @@ toggleTask (id) {
   let task = this.tasks[id]
   let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
   nextTaskState.completed = !task.completed
-  this.http.put('https://jsonplaceholder.typicode.com/todos/' + task.id, nextTaskState).subscribe(data => {
+  this.http.put('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos/' + task.id, nextTaskState).subscribe(data => {
     this.tasks[id] = data
   }, error => {
     console.log(error)
@@ -1305,7 +1305,7 @@ editTask (id, title : string) {
     let task = this.tasks[id]
     let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
     nextTaskState.title = title
-    this.http.put('https://jsonplaceholder.typicode.com/todos/' + task.id, nextTaskState).subscribe(data => {
+    this.http.put('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos/' + task.id, nextTaskState).subscribe(data => {
       this.tasks[id] = data
     }, error => {
       console.log(error)
@@ -1319,7 +1319,7 @@ Pour l'ajout d'une nouvelle tâche on utilisera POST :
 ```TypeScript
 // tasks.ts
 addTask (task : any) {
-  this.http.post('https://jsonplaceholder.typicode.com/todos/', task).subscribe(
+  this.http.post('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos/', task).subscribe(
     data => {
       this.tasks.push(data)
     },
@@ -1337,7 +1337,7 @@ Enfin pour la suppression on utilisera DELETE :
 deleteTask (task : any) {
   let index = this.findTask(task)
   if (index > -1) {
-    this.http.delete('https://jsonplaceholder.typicode.com/todos/' + task.id).subscribe(
+    this.http.delete('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos/' + task.id).subscribe(
       data => {
         this.tasks.splice(index, 1)
       },
