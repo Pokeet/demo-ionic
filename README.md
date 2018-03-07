@@ -914,6 +914,17 @@ Il faut également penser à mettre à jour le template de la page. En effet, ce
   </todo-item>
 ```
 
+Et voilà, ca fonctionne comme avant... 
+
+Mais maintenant notre code est plus propre avec un rôle par fichier :
+ - Dans le fichier tasks.ts on s'occupera seulement de manipuler les données de notre liste. C'est le model. 
+ - Dans le fichier home.html on ne s'occupera que de la façon dont doivent être affché les données, c'est la vue.
+ - Dans le fichier home.ts on manipulera le model et al vue en fonction des action de l'utilisateur, c'est le controlleur.
+
+On travail donc ici avec le design patern MVC.
+
+On va maintenant rendre notre model un peu plus interressant en faisant en sorte que chacunes de nos modification de celui-ci soient sauvegardées entre les utilisations.
+
 ## stocker les infos
 
 https://ionicframework.com/docs/storage/
