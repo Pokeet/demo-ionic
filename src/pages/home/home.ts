@@ -43,5 +43,10 @@ export class HomePage {
     this.tasksProvider.deleteTask(task)
   }
 
+  toggleTask (task) {
+    let taskID = this.tasksProvider.findTask(task)
+    this.tasksProvider.toggleTask(taskID)
+  }
+
 
 }

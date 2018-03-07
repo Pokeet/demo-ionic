@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output} from '@angular/core';
+import { Component, EventEmitter, Output, Input} from '@angular/core';
 import { ItemSliding } from 'ionic-angular/components/item/item-sliding';
 
 /**
@@ -13,8 +13,11 @@ import { ItemSliding } from 'ionic-angular/components/item/item-sliding';
 })
 export class TodoItemComponent {
 
-  @Output() onEdit = new EventEmitter<string>()
-  @Output() onDelete = new EventEmitter<string>()
+  @Output() onEdit = new EventEmitter<any>()
+  @Output() onDelete = new EventEmitter<any>()
+  @Output() onToggle = new EventEmitter<any>()
+
+  @Input() item : any
 
   complete: boolean
 
@@ -23,7 +26,8 @@ export class TodoItemComponent {
   }
 
   toggleCompletion () {
-    this.complete = !this.complete
+    this.onToggle.emit()
+    // this.item.completed = !this.item.completed
   }
 
   sendDelete (item: ItemSliding) {

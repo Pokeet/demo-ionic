@@ -993,3 +993,361 @@ Pour cela on va utiliser la méthode ```set(key, value)``` de storage. Avec cett
 
 A chaque fois qu'on modifie la liste des tâche (donc a la fin des méthode edit, delete et add)
 
+## Connexion avec une api
+
+Beaucoup d'app ne serait pas aussi utile sans la possibilité d'echanger des données avec un serveur.
+
+Nous allons voir comment procéder dès maintenant.
+
+### Utiliser une api REST avec HttpClient
+
+Une api REST est en fait un ensemble d'url a appeller depuis notre application pour échanger des données avec le serveur. Une meme url avec une méthode different (POST, GET, PUT ou DELETE) aura un effet different sur la ressource pointé par l'url. Par exemple appeller l'url http://api.demo.com/image1 avec la méthode GET nous renverra l'image alors qu'appeler la meme url avec le méthode DELETE l'effacera. Bien sur le serveur peut faire des vérifications d'authentification pour empêcher une personne de modifier certaine ressources ou non.
+
+Dans notre exemple nous allons utiliser une simlple api de démonstration : https://jsonplaceholder.typicode.com/
+
+Pour récupérer une liste de tache nous devrons donc entrer l'url suivante : https://jsonplaceholder.typicode.com/todos
+
+Pour utiliser les requete http commencez par decommenter les lignes relatives a httpClient dans le tasksProvider (l'import et le constructeur)
+
+Il faut aussi modifier le fichier app.module.ts pour ajouter httpClient a la liste des import et provider, comme ceci :
+
+```TypeScript
+\\ app.module.ts
+import { BrowserModule } from '@angular/platform-browser'
+import { ErrorHandler, NgModule } from '@angular/core'
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular'
+import { SplashScreen } from '@ionic-native/splash-screen'
+import { StatusBar } from '@ionic-native/status-bar'
+import { IonicStorageModule } from '@ionic/storage'
+import { HttpClientModule, HttpClient } from '@angular/common/http'; // ajouter cet import
+
+import { MyApp } from './app.component'
+import { HomePageModule } from '../pages/home/home.module'
+import { TasksProvider } from '../providers/tasks/tasks';
+import { TestProvider } from '../providers/test/test';
+
+@NgModule({
+  declarations: [
+    MyApp
+  ],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(MyApp),
+    HomePageModule,
+    IonicStorageModule.forRoot(),
+    HttpClientModule // importer ici
+  ],
+  bootstrap: [IonicApp],
+  entryComponents: [
+    MyApp
+  ],
+  providers: [
+    StatusBar,
+    SplashScreen,
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    TasksProvider,
+    TestProvider,
+    HttpClient // ajotuer a la liste des providers
+  ]
+})
+export class AppModule {}
+```
+
+Quant à votre tasks.ts il devrai ressembler à ceci :
+
+```TypeScript
+import { HttpClient } from '@angular/common/http';` // ajouter cet import
+
+
+@Injectable()
+export class TasksProvider {
+
+  tasks : Array<string>
+
+  constructor (
+    private storage : Storage,
+    public http: HttpClient // injecter http ici
+  ) {
+    
+  } 
+
+//...
+```
+
+Bien maintenant on peut utiliser l'api plutot que storage pour récupérer et enregistrer nos tâches.
+On va donc commencer par modifier la fonction getTasks() :
+
+```TypeScript
+// tasks.ts
+export class TasksProvider {
+//...
+  tasks : Array<any> // remplacer le type de tasks : Array<string> en Array<any>
+//...
+  getTasks () {
+    this.http.get('https://jsonplaceholder.typicode.com/todos').subscribe(
+      // subscribe prend deux callback en parametre, un pour le succes de la requete et un pour l'echec
+      data => {
+        this.tasks = data
+    }, err => {
+      console.log(err)
+    });
+  }
+```
+
+Si on actualise on constate qu'on a plein de nouvelle tâche mais qu'elles ont toute le nom "object Object". C'est normale car l'api renvoi une liste d'objet et non une liste de string. Or notre todo-item prend en parametre la string qui contient la tache a afficher.
+
+La structure de l'objet est la suivante :
+```json
+{
+  "userId": 1,
+  "id": 1,
+  "title": "delectus aut autem",
+  "completed": false
+}
+```
+
+On vois donc qu'il va falloire adapter notre todo-item pour qu'il affiche le title de l'item et nom l'item. Voici comment procéder :
+
+Tout d'abord dans notre home.html on va changer la façon dont on injecte les donné dans notre todo-item.
+
+Avant on avait ceci :
+```html
+  <todo-item *ngFor="let task of tasksProvider.tasks" (onDelete)="deleteTask(task)" (onEdit)="editTask(task)">
+    {{ task }}
+  </todo-item>
+```
+
+L'invonvéniant de cette méthode c'est qu'elle ne permet de passer que des string dans task. Or on souhaite désormais passer un objet. La nouvelle syntax est donc la suivante : 
+
+```html
+  <todo-item *ngFor="let task of tasksProvider.tasks" [item] = "task" (onDelete)="deleteTask(task)" (onEdit)="editTask(task)">
+  </todo-item>
+```
+
+Avec cette syntax on indique que la variable item de la class todoItem doit etre egale a la task. Il nous faut maintenant déclarer cette variable dans le todo-item.ts
+
+```TypeScript
+// todo-item
+export class TodoItemComponent {
+
+  @Output() onEdit = new EventEmitter<string>()
+  @Output() onDelete = new EventEmitter<string>()
+
+  @Input() item : any // on déclare la variable item. le @Input devant permet de dire qu'on veut pouvoir renseigner cette variable avec la syntax [item] = "task" qu'on a vu dans home.html
+```
+
+Voila maintenant notre todo-item a une référence vers l'objet task. Maintnenat il faut modifier le fichier todo-item.html pour affichier le title de l'item.
+
+Avant nous avions ceci :
+
+```html
+<button ion-item (click)="toggleCompletion()" [ngClass]="{'done':complete}">
+  <ng-content></ng-content>
+</button>
+```
+
+Mais maintenant nous voulons avoir le contenu de la variable item.title :
+
+```html
+<button ion-item (click)="toggleCompletion()" [ngClass]="{'done':item.completed}">
+  {{ item.title }}
+</button>
+```
+
+Aussi, comme l'objet contient l'information de completion, on va utiliser celui la plutot que de sotcker l'information dans le todo-item. C'est pourquoi j'ai aussi mis item.completed dans [ngClass]="{'done':item.completed}".
+
+Normalement maintenant vous devriez à nouveau voir des tâches. Certaines accomplies et d'autre non.
+
+Il y a encore un autre soucis, on ne peut plus cocher ou décocher une case. C'est normale puisque les event sur le clic que nous avons définie modifie la variable complete et pas la variable item.completed de l'objet qu'on a reçu. 
+On va donc changer la méthode toggleCompletion () :
+
+```TypeScript
+// todo-item.ts
+// ...
+toggleCompletion () {
+  this.item.completed = !this.item.completed
+}
+```
+
+Maintenant ça fonctionne. Cependant il y a un soucis. En effet normalement il faudrait pouvoir envoyer l'information que la tâche a été cochée au serveur. Or nous n'avons pas accès au provider depuis notre composant. Et c'est de toute façon un mauvaise pratique de modifier les données depuis un composant. 
+Il faut donc passer par les events pour signaler a home.ts que la tâche à été cochée, et home.ts manipulera le provider pour que l'info remonte au serveur.
+
+On déclare donc un nouvel EventEmitter :
+
+```TypeScript
+// todo-item.ts
+@Output() onEdit = new EventEmitter<any>() 
+@Output() onDelete = new EventEmitter<any>()
+@Output() onToggle = new EventEmitter<any>() // on déclare le nouvel event
+// ...
+toggleCompletion () {
+  this.onToggle.emit() // on l'invoque lorsqu'on clique
+}
+```
+
+Ensuite on va déclarer la fonction toggleTask dans notre provider :
+
+```TypeScript
+// providers/tasks/tasks.ts
+toggleTask (id) {
+  this.tasks[id].completed = !this.tasks[id].completed
+}
+```
+
+Enfin on adapte home.html et home.ts pour faire le lien : 
+
+On ajoute d'abord un listener toggleTask sur l'event onToggle de l'item :
+```home.html
+<todo-item *ngFor="let task of tasksProvider.tasks" [item] = "task" (onDelete)="deleteTask(task)" (onEdit)="editTask(task)" (onToggle)="toggleTask(task)">
+</todo-item>
+```
+
+puis on déclare cette fonction dans le home.ts :
+
+```TypeScript
+// home.ts
+toggleTask (task) {
+  let taskID = this.tasksProvider.findTask(task)
+  this.tasksProvider.toggleTask(taskID)
+}
+```
+
+Voila on a maintenant le meme résultat mais de cette façon on pourra faire les appels d'api requis pour sauvegarder l'etat de la tache lorsqu'on la coche et décoche.
+
+Enfin ce changement nous force aussi a changer le modal d'edition et d'ajout de tache. En effet avant il retournais une simple string or nous devons maintenant retourner un objet complet a la structure suivante : 
+
+```json
+{
+  "userId": 1,
+  "id": 1,
+  "title": "delectus aut autem",
+  "completed": false
+}
+```
+
+On ouvre donc notre fichier edit-task-modal.ts pour renommer taskText en taskObject et le text du constructeur en task. On va aussi initialiser un objet qui respect la structeur dans le cas ou on n'est pas en mode édition de tâche :
+
+```TypeScript
+// edit-task-modal.ts
+taskObject : any
+
+constructor(
+  public navCtrl: NavController, 
+  public navParams: NavParams,
+  public viewCtrl: ViewController
+) {
+  let task = this.navParams.get('task')
+  if (task != null) {
+    this.taskObject = task
+  } else {
+    this.taskObject = {
+      "userId" : 1,
+      "id" : -1,
+      "title" : "new task",
+      "completed" : false
+    }
+  }
+}
+
+cancel () {
+  this.viewCtrl.dismiss()
+}
+
+validate () {
+  this.viewCtrl.dismiss(this.taskObject)
+}
+```
+
+Enfin on modifie le html de edit-task-modal pour prendre en compte qu'on ne manipule pas juste une string mais un objet et qu'il ne faut pas donc afficher l'objet mais la proprieté title de l'objet , soit taskObject.title :
+
+```html
+<ion-item>
+  <ion-input type="text" value="" placeholder="Tenir la porte" [(ngModel)]="taskObject.title"></ion-input>
+</ion-item>
+
+<button ion-item color="danger" (click)="cancel()">Annuler</button>
+<button ion-item color="primary" (click)="validate()" [disabled]="taskObject.title == null || taskObject.title == ''">Valider</button>
+```
+
+Et voila notre application est de nouveau fonctionnelle comme avant le changement.
+
+Maintenant on va pouvoir se concentrer sur le provider pour envoyer au serveur les requetes de modifications.
+
+On va commencer par la requete de changement de status de la tâche.
+On va donc dans la fonction toggleTask (id).
+On commence par cloner l'etat de la tâche puis mettre son status complet a l'inverse de ce qu'il est.
+On fait cette operation sur un clone et non sur la donnée affiché parcequ'en en cas d'erreur de communication, l'application affichera un état différent du serveur.
+On fait donc les manipulation sur un clone qu'on appliquera seulement une fois la réposne du serveur reçu. 
+On va faire une requete de type PUT en passant en parametre le nouvel etat de notre tache. En retour le serveur nous renverra une réponse avec l'etat de la tache sur le serveur.
+
+Voici ce que ça doit donner : 
+
+```TypeScript
+// tasks.ts
+toggleTask (id) {
+  let task = this.tasks[id]
+  let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
+  nextTaskState.completed = !task.completed
+  this.http.put('https://jsonplaceholder.typicode.com/todos/' + task.id, nextTaskState).subscribe(data => {
+    this.tasks[id] = data
+  }, error => {
+    console.log(error)
+  })
+}
+```
+
+C'est le meme principe pour l'edition d'une tache :
+
+```TypeScript
+// tasks.ts
+editTask (id, title : string) {
+  if (task != "" && task != null) {
+    let task = this.tasks[id]
+    let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
+    nextTaskState.title = title
+    this.http.put('https://jsonplaceholder.typicode.com/todos/' + task.id, nextTaskState).subscribe(data => {
+      this.tasks[id] = data
+    }, error => {
+      console.log(error)
+    })
+  }
+}
+```
+
+Pour l'ajout d'une nouvelle tâche on utilisera POST :
+
+```TypeScript
+// tasks.ts
+addTask (task : any) {
+  this.http.post('https://jsonplaceholder.typicode.com/todos/', task).subscribe(
+    data => {
+      this.tasks.push(data)
+    },
+    err => {
+      console.log(err)
+    }
+  )
+}
+```
+
+Enfin pour la suppression on utilisera DELETE :
+
+```TypeScript
+// tasks.ts
+deleteTask (task : any) {
+  let index = this.findTask(task)
+  if (index > -1) {
+    this.http.delete('https://jsonplaceholder.typicode.com/todos/' + task.id).subscribe(
+      data => {
+        this.tasks.splice(index, 1)
+      },
+      error => {
+        console.log(error)
+      }
+    )
+  }
+}
+```
+
+
+

@@ -1,19 +1,21 @@
 import { Injectable } from '@angular/core'
 import { Storage } from '@ionic/storage'
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class TasksProvider {
 
-  tasks : Array<string>
+  tasks : Array<any>
 
   constructor (
-    private storage : Storage
+    private storage : Storage,
+    public http: HttpClient
   ) {
     
   }
 
   getTasks () {
-    this.storage.get('tasks').then(data => {
+    /*this.storage.get('tasks').then(data => {
 
       if (data == null) {
         data = [
@@ -26,46 +28,68 @@ export class TasksProvider {
       this.tasks = data
     }).catch(error => {
       console.log(error)
-    })
-  }
+    })*/
 
-  saveTasks (tasks : Array<string>) {
-
-  }
-
-  addTask (task : string) {
-    this.tasks.push(task)
-    this.storage.set('tasks', this.tasks).then(data => {
-      this.tasks = data
-    }).catch(error => {
-      console.log(error)
-    })
-  }
-
-  editTask (id, task : string) {
-    if (task != "" && task != null) {
-      this.tasks[id] = task
-      this.storage.set('tasks', this.tasks).then(data => {
+    this.http.get('https://jsonplaceholder.typicode.com/todos').subscribe(
+      // subscribe prend deux callback en parametre, un pour le succes de la requete et un pour l'echec
+      data => {
         this.tasks = data
-      }).catch(error => {
+    }, err => {
+      console.log(err)
+    });
+  }
+
+  addTask (task : any) {
+    this.http.post('https://jsonplaceholder.typicode.com/todos/', task).subscribe(
+      data => {
+        this.tasks.push(data)
+      },
+      err => {
+        console.log(err)
+      }
+    )
+  }
+
+  editTask (id, title : string) {
+    if (task != "" && task != null) {
+      let task = this.tasks[id]
+      let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
+      nextTaskState.title = title
+      this.http.put('https://jsonplaceholder.typicode.com/todos/' + task.id, nextTaskState).subscribe(data => {
+        this.tasks[id] = data
+      }, error => {
         console.log(error)
       })
     }
+  }
+
+  toggleTask (id) {
+    let task = this.tasks[id]
+    let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
+    nextTaskState.completed = !task.completed
+    this.http.put('https://jsonplaceholder.typicode.com/todos/' + task.id, nextTaskState).subscribe(data => {
+      this.tasks[id] = data
+    }, error => {
+      console.log(error)
+    })
   }
 
   findTask (text : string) {
     return this.tasks.indexOf(text)
   }
 
-  deleteTask (task : string) {
+  deleteTask (task : any) {
     let index = this.findTask(task)
     if (index > -1) {
-      this.tasks.splice(index, 1)
-      this.storage.set('tasks', this.tasks).then(data => {
-        this.tasks = data
-      }).catch(error => {
-        console.log(error)
-      })
+      this.http.delete('https://jsonplaceholder.typicode.com/todos/' + task.id).subscribe(
+        data => {
+          this.tasks.splice(index, 1)
+          console.log(data)
+        },
+        error => {
+          console.log(error)
+        }
+      )
     }
   }
 

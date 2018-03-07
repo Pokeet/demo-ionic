@@ -8,16 +8,23 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 })
 export class EditTaskModalPage {
 
-  taskText : any
+  taskObject : any
 
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public viewCtrl: ViewController
   ) {
-    let text = this.navParams.get('task')
-    if (text != null) {
-      this.taskText = text
+    let task = this.navParams.get('task')
+    if (task != null) {
+      this.taskObject = task
+    } else {
+      this.taskObject = {
+        "userId" : 1,
+        "id" : -1,
+        "title" : "new task",
+        "completed" : false
+      }
     }
   }
 
@@ -26,7 +33,7 @@ export class EditTaskModalPage {
   }
 
   validate () {
-    this.viewCtrl.dismiss(this.taskText)
+    this.viewCtrl.dismiss(this.taskObject)
   }
 
 }

@@ -22,10 +22,10 @@
 <ion-content padding>
 
   <ion-item>
-    <ion-input type="text" value="" placeholder="Tenir la porte" [(ngModel)]="taskText"></ion-input>
+    <ion-input type="text" value="" placeholder="Tenir la porte" [(ngModel)]="taskObject.title"></ion-input>
   </ion-item>
 
   <button ion-item color="danger" (click)="cancel()">Annuler</button>
-  <button ion-item color="primary" (click)="validate()" [disabled]="taskText == null || taskText == ''">Valider</button>
+  <button ion-item color="primary" (click)="validate()" [disabled]="taskObject.title == null || taskObject.title == ''">Valider</button>
 
 </ion-content>
