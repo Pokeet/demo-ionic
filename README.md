@@ -927,14 +927,69 @@ On va maintenant rendre notre model un peu plus interressant en faisant en sorte
 
 ## stocker les infos
 
+Pour stocker les informations nous allons installer le plugin storage de ionic comme indiqué dans la doc ici : 
 https://ionicframework.com/docs/storage/
 
-## Consulter une api
-### Http et Promise
+Nous importons ensuite le module Storage dans notre provider :
+```TypeScript
+// tasks.ts
+import { Storage } from '@ionic/storage'
+```
 
----
-Avoir installé les sdk Android ou iOs avant ces deux parties
+Puis on inject storage dans le constructeur de notre provider : 
+```TypeScript
+// tasks.ts
+  constructor (
+    private storage : Storage
+  ) {
+    
+  }
+```
 
-## Build avec Cordova
+Mainenant on va changer la méthode getTasks pour qu'elle aille chercher les données sauvegardées si elles existent, ou utiliser des tasks par défault dans le cas contraire. 
 
-## Plugin natif 
+Pour récupérer une valeur sauvegardé il suffit d'utiliser la méthode get de l'objet storage qui fonctionne par clé / valeur. Donc en faisant ```get('tasks')``` on obtiendra la veur associée a la clé 'tasks'.
+
+```TypeScript
+\\ tasks.ts
+  getTasks () {
+    this.storage.get('tasks').then(data => {
+
+      if (data == null) {
+        data = [
+          "Hodor !",
+          "HOODOOOOOOOOR !!",
+          "Hodor ?"
+        ]
+      }
+
+      this.tasks = data
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+```
+
+La fonction get renvoi une Promise. Une Promise est une classe dans laquelle on va renseigner différente méthode à appeller en fonction du succes ou de l'echec d'une méthode. 
+
+Dans notre cas on renseigne la méthode "then" qui sera éxécutée en cas de succes de la récupération des données, et la méthode "catch" qui sera éxécutée en cas d'echec.
+
+Ces deux méthode prenne un parametre qui sera renseignée par la Promise.
+
+Dans le cas de then c'est l'objet sauvegardé pour la clé 'tasks', et dans le cas de catch c'est l'erreur.
+
+Attention, malgrès un succès de récupération des données, le parametre data peut etre null si aucune donnée n'est sauvegardée, c'est pourquoi on intialise une liste par défaut dans ce cas.
+
+Voilà pour la récupération, mainteneant on va faire en sorte que toutes modifications de la liste entraine une sauvegarde de celle - ci.
+Pour cela on va utiliser la méthode ```set(key, value)``` de storage. Avec cette méthode on va enregistrer notre tableau dans la clé "tasks" a chaque fois qu'on modifie le tableau. Il nous suffit donc d'ajouter cette ligne 
+
+```TypeScript
+  this.storage.set('tasks', this.tasks).then(data => {
+    this.tasks = data
+  }).catch(error => {
+    console.log(error)
+  })
+``` 
+
+A chaque fois qu'on modifie la liste des tâche (donc a la fin des méthode edit, delete et add)
+

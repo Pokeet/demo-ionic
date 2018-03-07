@@ -35,13 +35,21 @@ export class TasksProvider {
 
   addTask (task : string) {
     this.tasks.push(task)
-    this.storage.set('tasks', this.tasks)
+    this.storage.set('tasks', this.tasks).then(data => {
+      this.tasks = data
+    }).catch(error => {
+      console.log(error)
+    })
   }
 
   editTask (id, task : string) {
     if (task != "" && task != null) {
       this.tasks[id] = task
-      this.storage.set('tasks', this.tasks)
+      this.storage.set('tasks', this.tasks).then(data => {
+        this.tasks = data
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 
@@ -53,7 +61,11 @@ export class TasksProvider {
     let index = this.findTask(task)
     if (index > -1) {
       this.tasks.splice(index, 1)
-      this.storage.set('tasks', this.tasks)
+      this.storage.set('tasks', this.tasks).then(data => {
+        this.tasks = data
+      }).catch(error => {
+        console.log(error)
+      })
     }
   }
 
