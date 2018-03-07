@@ -1349,5 +1349,8 @@ deleteTask (task : any) {
 }
 ```
 
+Et voilà, notre application est maintenant completement connectée à une api. Bien sur ce n'est qu'une api de test donc il n'y a pas tous les controles d'identification et d'utilisateur habituel, ca c'est en fonction des api que vous utiliserez.
 
+#Conclusion
 
+C'est fini. Vous savez faire une app simple avec ionic. Beau boulot.
