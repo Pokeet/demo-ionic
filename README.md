@@ -1087,7 +1087,7 @@ export class TasksProvider {
     this.http.get('http://my-json-server.typicode.com/Pokeet/demo-ionic/todos').subscribe(
       // subscribe prend deux callback en parametre, un pour le succes de la requete et un pour l'echec
       data => {
-        this.tasks = data
+        this.tasks = data as Array<any>
     }, err => {
       console.log(err)
     });
@@ -1301,7 +1301,7 @@ C'est le meme principe pour l'edition d'une tache :
 ```TypeScript
 // tasks.ts
 editTask (id, title : string) {
-  if (task != "" && task != null) {
+  if (title != "" && title != null) {
     let task = this.tasks[id]
     let nextTaskState = JSON.parse(JSON.stringify(this.tasks[id]))
     nextTaskState.title = title
