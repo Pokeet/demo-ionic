@@ -8,11 +8,16 @@
     {
       "id": 2,
       "title": "HODOR !",
-      "completed": false
+      "completed": true
     },
     {
       "id": 3,
       "title": "Ho ... Hodor ?",
+      "completed": false
+    },
+    {
+      "id": 4,
+      "title": "HOOOOOOOODOOOOOOOOR!!!",
       "completed": false
     }
   ],
